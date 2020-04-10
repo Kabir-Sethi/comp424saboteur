@@ -40,7 +40,10 @@ public class StudentPlayer extends SaboteurPlayer {
 
         //boardState.printBoard();
 
-        int[] ret = MyTools.calcBestPos(boardState);
+        double[] ret = MyTools.calcBestPos(boardState);
+
+
+        System.out.println(ret[2]);
 
         // Return your move to be processed by the server.
         return myMove;

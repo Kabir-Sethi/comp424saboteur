@@ -48,8 +48,12 @@ public class MyTools {
         return toConsider;
     }
 
-    public static Boolean checkPathExists(SaboteurBoardState boardState, i, j){
-        
+    public static Boolean checkPathExists(SaboteurBoardState boardState, int i, int j){
+
+
+
+        return true;
+
     }
 
     public static double[] calcBestPos(SaboteurBoardState boardState){
@@ -59,12 +63,6 @@ public class MyTools {
         SaboteurTile[][] board = boardState.getHiddenBoard();
 
 
-        ArrayList<Integer> BlockCards = new ArrayList<>();
-        ArrayList<Integer> RightCards = new ArrayList<>();
-        ArrayList<Integer> LeftCards = new ArrayList<>();
-        ArrayList<Integer> BottomCards = new ArrayList<>();
-        ArrayList<Integer> TopCards = new ArrayList<>();
-
         int bestRow = Integer.MAX_VALUE;
         int bestCol = Integer.MAX_VALUE;
         double bestAv = Integer.MAX_VALUE;
@@ -73,6 +71,24 @@ public class MyTools {
         int[] goalCol = {12,12,12};
 
         ArrayList<Integer> revealedPositions = checkRevealed(boardState);
+
+
+        ArrayList<String> BlockCards = new ArrayList<String>(
+                Arrays.asList("1", "2", "2_flip", "3", "3_flip", "4", "4_flip", "11", "11_flip", "12", "12_flip", "13", "14", "14_flip", "15")
+        );
+        ArrayList<String> LeftCards = new ArrayList<String>(
+                Arrays.asList("5_flip", "6", "7_flip", "9", "9_flip", "10", "8")
+        );
+        ArrayList<String> RightCards = new ArrayList<String>(
+                Arrays.asList("5", "6_flip", "7", "8", "9", "9_flip", "10")
+        );
+        ArrayList<String> TopCards = new ArrayList<String>(
+                Arrays.asList("0", "5_flip", "6", "6_flip", "7", "8", "9_flip")
+        );
+        ArrayList<String> BottomCards = new ArrayList<String>(
+                Arrays.asList("0", "5", "6", "6_flip", "7_flip", "8", "9")
+        );
+
 
         for (int i = 0; i<12; i++){
             for (int j= 0; j<board.length; j++){
@@ -160,6 +176,7 @@ public class MyTools {
             }
             System.out.println(" ");
         }
+
 
 
         double[] ret = {bestCol, bestRow, bestAv};
