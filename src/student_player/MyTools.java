@@ -48,6 +48,10 @@ public class MyTools {
         return toConsider;
     }
 
+    public static Boolean checkPathExists(SaboteurBoardState boardState, i, j){
+        
+    }
+
     public static double[] calcBestPos(SaboteurBoardState boardState){
 
         //calc dist from lowest 1 from each column
@@ -80,8 +84,8 @@ public class MyTools {
 
 
                     // CHECK IF PATH EXISTS TO CARD, IF NOT CANNOT BE BEST POSITION
-                    if (boardState.verifyLegit(){
-
+                    if (!checkPathExists(boardState, i, j)){
+                        continue;
                     }
 
 
