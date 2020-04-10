@@ -25,8 +25,7 @@ public class MyTools {
     );
 
 
-    public static ArrayList<Integer> checkRevealed(SaboteurBoardState boardState){
-        SaboteurTile[][] board = boardState.getHiddenBoard();
+    public static ArrayList<Integer> checkRevealed(SaboteurTile[][] board){
 
         ArrayList<Integer> toConsider = new ArrayList<>();
 
@@ -137,11 +136,9 @@ public class MyTools {
         return false;
     }
 
-    public static double[] calcBestPos(SaboteurBoardState boardState){
+    public static double[] calcBestPos(SaboteurTile[][] board){
 
         //calc dist from lowest 1 from each column
-
-        SaboteurTile[][] board = boardState.getHiddenBoard();
 
 
         int bestRow = 100;
@@ -152,7 +149,7 @@ public class MyTools {
         int[] goalRow = {3,5,7};
         int[] goalCol = {12,12,12};
 
-        ArrayList<Integer> revealedPositions = checkRevealed(boardState);
+        ArrayList<Integer> revealedPositions = checkRevealed(board);
 
 
 

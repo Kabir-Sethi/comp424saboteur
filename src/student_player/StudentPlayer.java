@@ -51,9 +51,11 @@ public class StudentPlayer extends SaboteurPlayer {
         Move myMove = boardState.getRandomMove();
         ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
 
+        //for (SaboteurMove.)
 
-        if (MyTools.checkRevealed(boardState).size() != 1){
-            // PLAY MAP CARD AND OTHERWISE DONT
+
+        if (MyTools.checkRevealed(boardState).size() > 1){
+            // PLAY MAP CARD AND OTHERWISE DON'T
         }
 
 
@@ -66,32 +68,13 @@ public class StudentPlayer extends SaboteurPlayer {
         //                2 -> current card is bottom of bestpos
         //                3 -> current card is top of bestpos
         //      average distance from goal for current bestPos
-
         double[] bestPos = MyTools.calcBestPos(boardState);
 
+        //case: cannot play best move, must check if close to goal:
+        if (bestPos[3] < 2){
+            //CASE: close to goal and cannot play a finishing move
 
-        ArrayList<SaboteurMove> move = new ArrayList<>();
-
-        System.out.println("best i: " + bestPos[0] + ", best j: " + bestPos[1]);
-            System.out.println("MOVES:");
-        for (SaboteurMove m: legalMoves){
-            System.out.println(m.toPrettyString());
         }
-
-//
-//        for (int i = 0; i < legalMoves.size(); i++){
-//            if (legalMoves.get(i).getCardPlayed().getName().equals("Map")) {
-//                myMove = legalMoves.get(i);
-//                return myMove;
-//            }
-////            } else if (legalMoves.get(i).getCardPlayed().getName().equals("Malus")){
-////                myMove = legalMoves.get(i);
-////                return myMove;
-////            } else if (legalMoves.get(i).getCardPlayed().getName().equals("Destroy")){
-////                myMove = legalMoves.get(i);
-////                return myMove;
-////            }
-//        }
 
         // Return your move to be processed by the server.
         return myMove;
