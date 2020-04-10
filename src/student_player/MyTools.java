@@ -147,6 +147,7 @@ public class MyTools {
         int bestRow = 100;
         int bestCol = 100;
         double bestAv = 400;
+        int direction = 5;
 
         int[] goalRow = {3,5,7};
         int[] goalCol = {12,12,12};
@@ -225,21 +226,27 @@ public class MyTools {
                         }
                     }
 
+
+
                     if (sums[lowest_idx]<bestAv){
                         bestAv = sums[lowest_idx];
                         if (lowest_idx == 0) {
                             bestCol = i;
                             bestRow = j-1;
+                            direction = 0;
                         } else if (lowest_idx == 1){
                             bestCol = i;
                             bestRow = j+1;
+                            direction = 1;
                         }
                         else if (lowest_idx == 2){
                             bestCol = i-1;
                             bestRow = j;
+                            direction = 2;
                         } else {
                             bestCol = i+1;
                             bestRow = j;
+                            direction = 3;
                         }
                     }
 
@@ -252,7 +259,7 @@ public class MyTools {
 
 
 
-        double[] ret = {bestCol, bestRow, bestAv};
+        double[] ret = {bestCol, bestRow, direction, bestAv};
 
         return ret;
 

@@ -48,61 +48,50 @@ public class StudentPlayer extends SaboteurPlayer {
         // For example, maybe you'll need to load some pre-processed best opening
         // strategies...
 
-        // Is random the best you can do?
         Move myMove = boardState.getRandomMove();
         ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
-        String direction = "";
-        if (direction.equals("top")){
-            ArrayList<SaboteurMove> topMove = new ArrayList<>();
-            for (SaboteurMove m: legalMoves) {
-                if (TopCards.contains(m.getCardPlayed().getName())){
-                    topMove.add(m);
-                }
-            }
 
-        } else if (direction.equals("bottom")){
-            ArrayList<SaboteurMove> bottomMove = new ArrayList<>();
-            for (SaboteurMove m: legalMoves) {
-                if (BottomCards.contains(m.getCardPlayed().getName())){
-                    bottomMove.add(m);
-                }
-            }
-        } else if (direction.equals("left")){
-            ArrayList<SaboteurMove> leftMove = new ArrayList<>();
-            for (SaboteurMove m: legalMoves) {
-                if (LeftCards.contains(m.getCardPlayed().getName())){
-                    leftMove.add(m);
-                }
-            }
-        } else if (direction.equals("right")){
-            ArrayList<SaboteurMove> rightMove = new ArrayList<>();
-            for (SaboteurMove m: legalMoves) {
-                if (RightCards.contains(m.getCardPlayed().getName())){
-                    rightMove.add(m);
-                }
-            }
-        } else{
-            ArrayList<SaboteurMove> blockMove = new ArrayList<>();
-            for (SaboteurMove m: legalMoves) {
-                if (BlockCards.contains(m.getCardPlayed().getName())){
-                    blockMove.add(m);
-                }
-            }
+
+        if (MyTools.checkRevealed(boardState).size() != 1){
+            // PLAY MAP CARD AND OTHERWISE DONT
         }
 
-        for (int i = 0; i < legalMoves.size(); i++){
-            if (legalMoves.get(i).getCardPlayed().getName().equals("Map")) {
-                myMove = legalMoves.get(i);
-                return myMove;
-            }
-//            } else if (legalMoves.get(i).getCardPlayed().getName().equals("Malus")){
-//                myMove = legalMoves.get(i);
-//                return myMove;
-//            } else if (legalMoves.get(i).getCardPlayed().getName().equals("Destroy")){
+
+        // @returns:
+        //      best place to play i
+        //      best place to play j
+        //      direction of best spot to play and current card:
+        //                0 -> current card is right of best pos
+        //                1 -> current card is left of best pos
+        //                2 -> current card is bottom of bestpos
+        //                3 -> current card is top of bestpos
+        //      average distance from goal for current bestPos
+
+        double[] bestPos = MyTools.calcBestPos(boardState);
+
+
+        ArrayList<SaboteurMove> move = new ArrayList<>();
+
+        System.out.println("best i: " + bestPos[0] + ", best j: " + bestPos[1]);
+            System.out.println("MOVES:");
+        for (SaboteurMove m: legalMoves){
+            System.out.println(m.toPrettyString());
+        }
+
+//
+//        for (int i = 0; i < legalMoves.size(); i++){
+//            if (legalMoves.get(i).getCardPlayed().getName().equals("Map")) {
 //                myMove = legalMoves.get(i);
 //                return myMove;
 //            }
-        }
+////            } else if (legalMoves.get(i).getCardPlayed().getName().equals("Malus")){
+////                myMove = legalMoves.get(i);
+////                return myMove;
+////            } else if (legalMoves.get(i).getCardPlayed().getName().equals("Destroy")){
+////                myMove = legalMoves.get(i);
+////                return myMove;
+////            }
+//        }
 
         // Return your move to be processed by the server.
         return myMove;
