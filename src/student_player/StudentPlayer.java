@@ -76,7 +76,7 @@ public class StudentPlayer extends SaboteurPlayer {
             //                2 -> current card is bottom of bestpos
             //                3 -> current card is top of bestpos
             //      average distance from goal for current bestPos
-            double[] bestPos = MyTools.calcBestPos(board);
+            double[] bestPos = MyTools.calcBestPos(board, true);
 
 
             System.out.println("i: " + bestPos[0] + ", j: "+bestPos[1] +", bestAv: "+bestPos[3]);
