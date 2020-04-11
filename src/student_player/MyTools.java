@@ -74,6 +74,7 @@ public class MyTools {
 
         try{
             String card = board[i][j].getIdx();
+            if (BlockCards.contains(card)) return false;
         } catch (Exception e){
             return false;
         }
@@ -163,9 +164,16 @@ public class MyTools {
 
                     String card = board[i][j].getIdx();
 
-                    if (card.contains("hidden") || card.contains("nugget")){
+                    if (j== goalRow[0] && i==goalCol[0]){
                         continue;
                     }
+                    if (j== goalRow[1] && i==goalCol[1]){
+                        continue;
+                    }
+                    if (j== goalRow[2] && i==goalCol[2]){
+                        continue;
+                    }
+
 
 
                     if (BlockCards.contains(card)){
@@ -175,9 +183,9 @@ public class MyTools {
                     //System.out.println(card);
 
                     // CHECK IF PATH EXISTS TO CARD, IF NOT CANNOT BE BEST POSITION
-                      if (checkPathExists(board, i, j, -1, -1) == false){
-                       continue;
-                    }
+//                      if (checkPathExists(board, i, j, -1, -1) == false){
+//                       continue;
+//                    }
 
                           //System.out.println("PATH EXISTS TO: " + i + ", " + j);
 
@@ -222,7 +230,7 @@ public class MyTools {
                         sums[k] = sums[k]/revealedPositions.size();
 
                         //System.out.println(sums[k]);
-                        if (sums[k]<lowest){
+                        if (sums[k]<=lowest){
                             lowest = sums[k];
                             lowest_idx = k;
                         }
@@ -338,7 +346,7 @@ public class MyTools {
 
                 double[] bestPos = calcBestPos(board);
 
-                if (bestPos[3] <= bestAv){
+                if (bestPos[3] < bestAv){
                     bestMoves.add(m);
                 }
 

@@ -2,6 +2,9 @@ package student_player;
 
 
 import Saboteur.SaboteurMove;
+import Saboteur.cardClasses.SaboteurBonus;
+import Saboteur.cardClasses.SaboteurDestroy;
+import Saboteur.cardClasses.SaboteurDrop;
 import Saboteur.cardClasses.SaboteurTile;
 import boardgame.Move;
 
@@ -56,6 +59,14 @@ public class StudentPlayer extends SaboteurPlayer {
             }
         }
 
+        if (boardState.getNbMalus(boardState.getTurnPlayer()) > 0){
+            SaboteurMove move = new SaboteurMove(new SaboteurBonus(), 0, 0, boardState.getTurnPlayer());
+
+            if (boardState.isLegal(move)){
+                return move;
+            }
+        }
+
             // @returns:
             //      best place to play i
             //      best place to play j
@@ -80,7 +91,7 @@ public class StudentPlayer extends SaboteurPlayer {
             if (bestMoves.size() > 0) return bestMoves.get(0);
 
             // if close to end, play malus or destroy
-            if (bestPos[3] < 2){
+            if (bestPos[3] <= 2){
                 // play malus
                 for (SaboteurMove m: legalMoves){
                     if (m.getCardPlayed().getName() == "Malus"){
@@ -104,10 +115,10 @@ public class StudentPlayer extends SaboteurPlayer {
                     last_idx[1] = (int) bestPos[1];
                 }
 
-                SaboteurMove play_malus = new SaboteurMove(new SaboteurTile("Destroy"), last_idx[0], last_idx[1], boardState.getTurnPlayer());
+                SaboteurMove play_destroy = new SaboteurMove(new SaboteurDestroy(), last_idx[0], last_idx[1], boardState.getTurnPlayer());
 
-                if (boardState.isLegal(play_malus)){
-                    return play_malus;
+                if (boardState.isLegal(play_destroy)){
+                    return play_destroy;
                 }
             }
 
@@ -115,11 +126,25 @@ public class StudentPlayer extends SaboteurPlayer {
 
             // if no best move: play random move not at best position
             for (SaboteurMove m: legalMoves){
-                if (m.getPosPlayed()[0] != bestPos[0] && m.getPosPlayed()[1] != bestPos[1]){
+
+                String card = m.getCardPlayed().getName();
+
+                String[] card_split = card.split(":");
+
+                String card_idx = "";
+
+                if (card_split.length  == 1){
+                    card_idx = card_split[0];
+                } else {
+                    card_idx = card_split[1];
+                }
+
+
+                if (m.getPosPlayed()[0] != bestPos[0] && m.getPosPlayed()[1] != bestPos[1] && BlockCards.contains(card_idx)){
                     return m;
                 }
             }
 
-        return legalMoves.get(0);
+        return new SaboteurMove(new SaboteurDrop(), 2,0, boardState.getTurnPlayer());
     }
 }
