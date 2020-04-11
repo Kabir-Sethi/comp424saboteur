@@ -1,0 +1,25 @@
+# Server version 0.08 running on 192.168.2.10:8123
+# Game ID: 75
+# Board class: Saboteur.SaboteurBoard
+# Timeout: 20000
+# First Move Timeout: 30000
+# Date: Sat Apr 11 00:13:36 EDT 2020
+# Player 1: Player-0, '260738242', running on 192.168.2.10
+# Player 2: Player-1, 'Human', running on 192.168.2.10
+START Player-0 260738242
+START Player-1 Human
+BoardInit:Tile:8,Tile:10,Tile:8,Map,Tile:5,Tile:7,Tile:0,Malus,Tile:4,Tile:2,Tile:7,Map,Tile:0,Tile:8,Tile:3,Malus,Tile:5,Tile:6,Tile:7,Bonus,Tile:6,Tile:15,Map,Bonus,Tile:6,Tile:1,Tile:7,Tile:9,Tile:9,Map,Tile:9,Tile:9,Tile:13,Tile:10,Destroy,Tile:12,Map,Tile:10,Tile:7,Tile:8,Tile:5-Tile:14,Tile:9,Destroy,Tile:11,Tile:0,Tile:6,Tile:8-Bonus,Tile:5,Tile:0,Destroy,Tile:6,Bonus,Map-Tile:nugget,Tile:hidden2,Tile:hidden1
+Tile:8 6 5 1
+Map 12 3 0
+Tile:8 7 5 1
+Tile:6 8 5 0
+Tile:6 9 5 1
+Map 12 3 0
+Tile:8 10 5 1
+Tile:5 5 4 0
+Tile:0 11 5 1
+Destroy 5 4 0
+Tile:9 12 6 1
+Tile:0 4 5 0
+Tile:0 3 5 1
+Tile:10 5 4 0

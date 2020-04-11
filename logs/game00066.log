@@ -1,0 +1,44 @@
+# Server version 0.08 running on 192.168.2.10:8123
+# Game ID: 66
+# Board class: Saboteur.SaboteurBoard
+# Timeout: 20000
+# First Move Timeout: 30000
+# Date: Fri Apr 10 19:56:25 EDT 2020
+# Player 1: Player-0, '260738242', running on 192.168.2.10
+# Player 2: Player-1, 'RandomPlayer', running on 192.168.2.10
+START Player-0 260738242
+START Player-1 RandomPlayer
+BoardInit:Tile:8,Tile:8,Destroy,Map,Tile:2,Tile:10,Tile:8,Tile:1,Tile:5,Tile:7,Tile:4,Tile:9,Malus,Tile:3,Tile:0,Destroy,Tile:5,Tile:10,Tile:8,Tile:6,Tile:15,Tile:0,Destroy,Tile:0,Tile:7,Tile:11,Tile:6,Tile:9,Tile:9,Tile:7,Tile:6,Tile:9,Map,Tile:6,Tile:10,Tile:7,Tile:6,Tile:5,Map,Tile:12,Malus-Map,Tile:0,Tile:14,Tile:8,Tile:5,Tile:9,Map-Map,Bonus,Tile:13,Bonus,Bonus,Bonus,Tile:7-Tile:nugget,Tile:hidden1,Tile:hidden2
+Tile:9 4 5 1
+Map 12 3 0
+Tile:5_flip 6 5 1
+Tile:13 4 4 0
+Tile:8 3 4 1
+Map 12 3 0
+Destroy 4 5 1
+Tile:10 6 4 0
+Map 12 5 1
+Tile:7 3 3 0
+Tile:2_flip 4 5 1
+Tile:8 2 3 0
+Tile:8 3 5 1
+Tile:1 1 3 0
+Tile:4 4 3 1
+Tile:7 2 2 0
+Tile:14_flip 6 3 1
+Tile:9 0 3 0
+Tile:8 0 2 1
+Tile:3 0 1 0
+Tile:0 1 2 1
+Destroy 0 1 0
+Tile:0 2 5 1
+Tile:10 0 1 0
+Tile:8 0 4 1
+Tile:6 0 5 0
+Destroy 3 5 1
+Tile:0 1 4 0
+Drop 5 0 1
+Tile:0 1 5 0
+Tile:6 2 4 1
+GAMEOVER USER CANCEL UNDECIDED
+# Game ended: Fri Apr 10 19:56:43 EDT 2020

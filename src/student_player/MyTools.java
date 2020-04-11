@@ -1,6 +1,7 @@
 package student_player;
 
 import Saboteur.SaboteurBoardState;
+import Saboteur.SaboteurMove;
 import Saboteur.cardClasses.SaboteurTile;
 
 import java.lang.reflect.Array;
@@ -155,12 +156,16 @@ public class MyTools {
 
 
 
-        for (int i = 0; i<12; i++){
+        for (int i = 0; i<board.length; i++){
             for (int j= 0; j<board.length; j++){
                 try {
 
 
                     String card = board[i][j].getIdx();
+
+                    if (card.contains("hidden") || card.contains("nugget")){
+                        continue;
+                    }
 
 
                     if (BlockCards.contains(card)){
@@ -259,6 +264,81 @@ public class MyTools {
         double[] ret = {bestCol, bestRow, direction, bestAv};
 
         return ret;
+
+    }
+
+
+    public static ArrayList<SaboteurMove> sortBestMoves(ArrayList<SaboteurMove> bestMoves){
+
+        ArrayList<SaboteurMove> firstorder = new ArrayList<>();
+        ArrayList<SaboteurMove> secondorder = new ArrayList<>();
+        ArrayList<SaboteurMove> thirdorder = new ArrayList<>();
+        ArrayList<SaboteurMove> fourthorder = new ArrayList<>();
+
+        for (SaboteurMove m: bestMoves){
+            String card_idx = m.getCardPlayed().getName().split(":")[1];
+            if (card_idx == "10" || card_idx == "0"){
+                firstorder.add(m);
+            }
+            if (card_idx.contains("5") || card_idx.contains("7")){
+                secondorder.add(m);
+            }
+            if (card_idx.contains("6") || card_idx.contains("9")){
+                thirdorder.add(m);
+            }
+            if (card_idx == "8"){
+                fourthorder.add(m);
+            }
+
+        }
+
+        firstorder.addAll(secondorder);
+        firstorder.addAll(thirdorder);
+        firstorder.addAll(fourthorder);
+
+        return firstorder;
+    }
+
+    public static ArrayList<SaboteurMove> getBestMoveHierarchy(double col, double row, SaboteurTile[][] board, ArrayList<SaboteurMove> legalMoves, double bestAv) {
+
+        int Col = (int)col;
+        int Row = (int)row;
+
+
+        ArrayList<SaboteurMove> bestMoves = new ArrayList<>();
+
+
+        for (SaboteurMove m: legalMoves){
+            String card = m.getCardPlayed().getName();
+
+            String[] card_split = card.split(":");
+
+            String card_idx = "";
+
+            if (card_split.length  == 1){
+                card_idx = card_split[0];
+            } else {
+                card_idx = card_split[1];
+            }
+
+
+            if (m.getPosPlayed()[0] == Col && m.getPosPlayed()[1] == Row && !BlockCards.contains(card_idx)){
+                board[Col][Row] = new SaboteurTile(card_idx);
+
+                double[] bestPos = calcBestPos(board);
+
+                if (bestPos[3] < bestAv){
+                    bestMoves.add(m);
+                }
+
+            }
+
+        }
+
+
+        bestMoves = sortBestMoves(bestMoves);
+
+        return bestMoves;
 
     }
 }

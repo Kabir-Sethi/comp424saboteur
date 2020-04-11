@@ -27,3 +27,11 @@ Tile:5 4 3 1
 Tile:9_flip 10 5 0
 Tile:5 3 4 1
 Tile:6_flip 10 4 0
+Tile:7_flip 10 6 1
+Drop 5 0 0
+Drop 1 0 1
+Tile:11_flip 3 5 0
+Destroy 4 5 1
+Destroy 3 5 0
+GAMEOVER USER CANCEL UNDECIDED
+# Game ended: Fri Apr 10 19:46:38 EDT 2020

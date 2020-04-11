@@ -67,90 +67,59 @@ public class StudentPlayer extends SaboteurPlayer {
             //      average distance from goal for current bestPos
             double[] bestPos = MyTools.calcBestPos(board);
 
-            ArrayList<SaboteurMove> bestMoves = new ArrayList<>();
-            ArrayList<SaboteurMove> allOtherBlocks = new ArrayList<>();
-            ArrayList<SaboteurMove> allOtherMoves = new ArrayList<>();
-            ArrayList<SaboteurMove> MalusMoves = new ArrayList<>();
-            ArrayList<SaboteurMove> DestroyMoves = new ArrayList<>();
 
-            for (SaboteurMove m : legalMoves) {
+            System.out.println("i: " + bestPos[0] + ", j: "+bestPos[1] +", bestAv: "+bestPos[3]);
 
-                //System.out.println(m.getCardPlayed().getName());
+            // make hierarchy of best moves at position bestPos[0], bestPos[1]
 
-                String[] name = m.getCardPlayed().getName().split(":");
-                String cardName = "";
-                if (name.length == 1){
-                    cardName = name[0];
-                } else {
-                    cardName = name[1];
-                }
+            ArrayList<SaboteurMove> bestMoves = MyTools.getBestMoveHierarchy(bestPos[0], bestPos[1], board, legalMoves, bestPos[3]);
 
-                if (m.getPosPlayed()[1] == bestPos[1] && m.getPosPlayed()[0] == bestPos[0] && !BlockCards.contains(cardName)) {
-                    SaboteurTile[][] newBS = boardState.getHiddenBoard();
-                    SaboteurTile newTile = new SaboteurTile(cardName);
-                    newBS[m.getPosPlayed()[0]][m.getPosPlayed()[1]] = newTile;
-                    double[] newPos = MyTools.calcBestPos(newBS);
-                    if (newPos[3] < bestPos[3]) {
-                        bestMoves.add(m);
+            System.out.println("BestMoves Size: " + bestMoves.size());
+
+
+            if (bestMoves.size() > 0) return bestMoves.get(0);
+
+            // if close to end, play malus or destroy
+            if (bestPos[3] < 2){
+                // play malus
+                for (SaboteurMove m: legalMoves){
+                    if (m.getCardPlayed().getName() == "Malus"){
+                        return m;
                     }
-                } else if (BlockCards.contains(cardName) && m.getPosPlayed()[0] != bestPos[1] && m.getPosPlayed()[1] != bestPos[0]) {
-                    allOtherBlocks.add(m);
-                } else if (m.getPosPlayed()[0] != bestPos[1] && m.getPosPlayed()[1] != bestPos[0]) {
-                    allOtherBlocks.add(m);
-                }
-                if (cardName == "Malus"){
-                    MalusMoves.add(m);
-                }
-                if (cardName == "Destroy"){
-                    DestroyMoves.add(m);
                 }
 
+                int[] last_idx = new int[2];
+                // if no malus, destroy last card:
+                if (bestPos[2] == 0){
+                    last_idx[0] = (int) bestPos[0];
+                    last_idx[1] = (int) bestPos[1]+1;
+                } else if (bestPos[2] == 1){
+                    last_idx[0] = (int) bestPos[0];
+                    last_idx[1] = (int) bestPos[1]-1;
+                } else if (bestPos[2] == 2){
+                    last_idx[0] = (int) bestPos[0]+1;
+                    last_idx[1] = (int) bestPos[1];
+                } else {
+                    last_idx[0] = (int) bestPos[0]-1;
+                    last_idx[1] = (int) bestPos[1];
+                }
+
+                SaboteurMove play_malus = new SaboteurMove(new SaboteurTile("Destroy"), last_idx[0], last_idx[1], boardState.getTurnPlayer());
+
+                if (boardState.isLegal(play_malus)){
+                    return play_malus;
+                }
             }
 
 
-            //case: cannot play best move, must check if close to goal:
-            if (bestPos[3] < 2) {
-                //CASE: close to goal and cannot play a finishing move
-                if (MalusMoves.size() != 0){
-                    return MalusMoves.get(0);
-                } else if (DestroyMoves.size()!=0){
-                    return DestroyMoves.get(0);
-                }
 
-            }
-
-            ArrayList<String> secondBest = new ArrayList<>(Arrays.asList("5", "5_flip", "7", "7_flip"));
-
-            ArrayList<String> thirdBest = new ArrayList<>(Arrays.asList("6", "6_flip", "9", "9_flip"));
-
-            for (SaboteurMove m : bestMoves) {
-                if (m.getCardPlayed().getName().split(":")[1].equals("0") || m.getCardPlayed().getName().split(":")[1].equals("10")) {
+            // if no best move: play random move not at best position
+            for (SaboteurMove m: legalMoves){
+                if (m.getPosPlayed()[0] != bestPos[0] && m.getPosPlayed()[1] != bestPos[1]){
                     return m;
                 }
             }
 
-            for (SaboteurMove m : bestMoves) {
-                if (secondBest.contains(m.getCardPlayed().getName().split(":")[1])) {
-                    return m;
-                }
-            }
-
-            for (SaboteurMove m : bestMoves) {
-                if (thirdBest.contains(m.getCardPlayed().getName().split(":")[1])) {
-                    return m;
-                }
-            }
-
-            for (SaboteurMove m : bestMoves) {
-                if (m.getCardPlayed().getName().split(":")[1].equals("8")) {
-                    return m;
-                }
-            }
-
-            if (allOtherBlocks.size() != 0){
-                return allOtherBlocks.get(0);
-            } else {
-                return allOtherMoves.get(0);
-            }
+        return legalMoves.get(0);
     }
 }
