@@ -30,28 +30,35 @@ public class MyTools {
 
         ArrayList<Integer> toConsider = new ArrayList<>();
 
-        if (board[12][3].getIdx() != "8"){
-            if (board[12][3].getIdx() == "nugget"){
+        if (!board[12][3].getIdx().contains("8")){
+
+            if (board[12][3].getIdx().contains( "nugget")){
                 toConsider.removeAll(toConsider);
                 toConsider.add(0);
+                return toConsider;
             }
         } else {
             toConsider.add(0);
         }
 
-        if (board[12][5].getIdx() != "8"){
-            if (board[12][5].getIdx() == "nugget"){
+        if (!board[12][5].getIdx().contains("8")){
+
+            if (board[12][5].getIdx().contains("nugget")){
                 toConsider.removeAll(toConsider);
                 toConsider.add(1);
+                return toConsider;
             }
         } else {
             toConsider.add(1);
         }
 
-        if (board[12][7].getIdx() != "8"){
-            if (board[12][7].getIdx() == "nugget"){
+
+        if (!board[12][7].getIdx().contains("8")){
+
+            if (board[12][7].getIdx().contains( "nugget")){
                 toConsider.removeAll(toConsider);
                 toConsider.add(2);
+                return toConsider;
             }
         } else {
             toConsider.add(2);
@@ -59,6 +66,7 @@ public class MyTools {
 
         return toConsider;
     }
+
 
     public static Boolean checkPathExists(SaboteurTile[][] board, int i, int j){
 
@@ -96,6 +104,7 @@ public class MyTools {
                         Integer[] to_add = {s[0], s[1]+1};
                         if (s[0] == 5 && s[1]+1 == 5) return true;
                         queue.add(to_add);
+
                     } catch (Exception e){
 
                     }
@@ -205,7 +214,7 @@ public class MyTools {
 
                     for (int check: revealedPositions){
 
-
+                        System.out.println("Revealed Postions size: " + revealedPositions.size());
 
                         if (LeftCards.contains(card) && j!=0){
                             if (sums[0] > 100){
@@ -283,7 +292,6 @@ public class MyTools {
                                 try {
                                     String c = board[i+1][j].getIdx();
                                 } catch (Exception e) {
-
                                     bestAv = sums[lowest_idx];
                                     bestCol = i + 1;
                                     bestRow = j;
@@ -331,13 +339,16 @@ public class MyTools {
             if (card_idx == "10" || card_idx == "0"){
                 firstorder.add(m);
             }
-            if (card_idx.contains("5") || card_idx.contains("7")){
+            else if (card_idx.contains("5") || card_idx.contains("7")){
                 secondorder.add(m);
             }
-            if (card_idx.contains("6") || card_idx.contains("9")){
+            else if (card_idx.contains("6") || card_idx.contains("9")){
                 thirdorder.add(m);
             }
-            if (card_idx == "8"){
+            else if (card_idx == "8"){
+                fourthorder.add(m);
+            }
+            else if (!BlockCards.contains(card_idx)){
                 fourthorder.add(m);
             }
 

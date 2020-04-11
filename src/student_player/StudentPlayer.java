@@ -2,10 +2,7 @@ package student_player;
 
 
 import Saboteur.SaboteurMove;
-import Saboteur.cardClasses.SaboteurBonus;
-import Saboteur.cardClasses.SaboteurDestroy;
-import Saboteur.cardClasses.SaboteurDrop;
-import Saboteur.cardClasses.SaboteurTile;
+import Saboteur.cardClasses.*;
 import boardgame.Move;
 
 import Saboteur.SaboteurPlayer;
@@ -13,6 +10,7 @@ import Saboteur.SaboteurBoardState;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 /** A player file submitted by a student. */
 public class StudentPlayer extends SaboteurPlayer {
@@ -48,15 +46,22 @@ public class StudentPlayer extends SaboteurPlayer {
 
         ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
 
+        ArrayList<Integer> revealed = MyTools.checkRevealed(board);
 
-        if (MyTools.checkRevealed(boardState.getHiddenBoard()).size() > 1) {
+        if (revealed.size() > 1) {
             // PLAY MAP CARD AND OTHERWISE DONT
-            for (int i = 0; i < legalMoves.size(); i++) {
-                if (legalMoves.get(i).getCardPlayed().getName().equals("Map")) {
-                    myMove = legalMoves.get(i);
-                    return myMove;
+            Random r = new Random();
+                int index = r.nextInt(legalMoves.size());
+                if (revealed.get(index) == 0){
+                    SaboteurMove m = new SaboteurMove(new SaboteurMap(), 12, 3, boardState.getTurnPlayer());
+                    if(boardState.isLegal(m)) return m;
+                } else if (revealed.get(index) == 1){
+                    SaboteurMove m = new SaboteurMove(new SaboteurMap(), 12, 5, boardState.getTurnPlayer());
+                    if(boardState.isLegal(m)) return m;
+                } else {
+                    SaboteurMove m = new SaboteurMove(new SaboteurMap(), 12, 7, boardState.getTurnPlayer());
+                    if(boardState.isLegal(m)) return m;
                 }
-            }
         }
 
         if (boardState.getNbMalus(boardState.getTurnPlayer()) > 0){
@@ -94,7 +99,7 @@ public class StudentPlayer extends SaboteurPlayer {
             if (bestPos[3] <= 2){
                 // play malus
                 for (SaboteurMove m: legalMoves){
-                    if (m.getCardPlayed().getName() == "Malus"){
+                    if (m.getCardPlayed().getName().equals("Malus")){
                         return m;
                     }
                 }
@@ -145,6 +150,8 @@ public class StudentPlayer extends SaboteurPlayer {
                 }
             }
 
+            // drop destroy cards!
+            // or drop block card
         return new SaboteurMove(new SaboteurDrop(), 2,0, boardState.getTurnPlayer());
     }
 }
