@@ -276,7 +276,18 @@ public class MyTools {
         ArrayList<SaboteurMove> fourthorder = new ArrayList<>();
 
         for (SaboteurMove m: bestMoves){
-            String card_idx = m.getCardPlayed().getName().split(":")[1];
+            String card = m.getCardPlayed().getName();
+
+            String[] card_split = card.split(":");
+
+            String card_idx = "";
+
+            if (card_split.length  == 1){
+                card_idx = card_split[0];
+            } else {
+                card_idx = card_split[1];
+            }
+
             if (card_idx == "10" || card_idx == "0"){
                 firstorder.add(m);
             }
@@ -327,7 +338,7 @@ public class MyTools {
 
                 double[] bestPos = calcBestPos(board);
 
-                if (bestPos[3] < bestAv){
+                if (bestPos[3] <= bestAv){
                     bestMoves.add(m);
                 }
 
