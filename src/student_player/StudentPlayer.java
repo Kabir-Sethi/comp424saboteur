@@ -51,7 +51,7 @@ public class StudentPlayer extends SaboteurPlayer {
         if (revealed.size() > 1) {
             // PLAY MAP CARD AND OTHERWISE DONT
             Random r = new Random();
-                int index = r.nextInt(legalMoves.size());
+                int index = r.nextInt(revealed.size());
                 if (revealed.get(index) == 0){
                     SaboteurMove m = new SaboteurMove(new SaboteurMap(), 12, 3, boardState.getTurnPlayer());
                     if(boardState.isLegal(m)) return m;

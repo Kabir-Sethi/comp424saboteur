@@ -64,6 +64,12 @@ public class MyTools {
             toConsider.add(2);
         }
 
+        if (toConsider.size() == 0){
+            if (board[12][3].getIdx().contains("8")) toConsider.add(0);
+            if (board[12][5].getIdx().contains("8")) toConsider.add(1);
+            if (board[12][7].getIdx().contains("8")) toConsider.add(2);
+        }
+
         return toConsider;
     }
 
@@ -206,7 +212,7 @@ public class MyTools {
                     }
 
 
-                    System.out.println("PATH EXISTS TO: " + i + ", " + j);
+                    //System.out.println("PATH EXISTS TO: " + i + ", " + j);
 
 
                     //sum from [left, right, top, bottom]
