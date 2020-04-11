@@ -46,6 +46,8 @@ public class StudentPlayer extends SaboteurPlayer {
 
         ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
 
+        long startTime = System.nanoTime();
+
         ArrayList<Integer> revealed = MyTools.checkRevealed(board);
 
         if (revealed.size() > 1) {
@@ -72,6 +74,16 @@ public class StudentPlayer extends SaboteurPlayer {
             }
         }
 
+        long endTime = System.nanoTime();
+
+        long elapsed = (endTime-startTime)/1000;
+
+        System.out.println("REVEALED ELAPSED: " + elapsed);
+
+
+        startTime = System.nanoTime();
+
+        System.out.println("BestPos Started");
             // @returns:
             //      best place to play i
             //      best place to play j
@@ -83,17 +95,27 @@ public class StudentPlayer extends SaboteurPlayer {
             //      average distance from goal for current bestPos
             double[] bestPos = MyTools.calcBestPos(board, true);
 
+        endTime = System.nanoTime();
+        elapsed = (endTime-startTime)/1000;
 
-            System.out.println("i: " + bestPos[0] + ", j: "+bestPos[1] +", bestAv: "+bestPos[3]);
+        System.out.println("BESTPOS ELAPSED: " + elapsed);
+
+            //System.out.println("i: " + bestPos[0] + ", j: "+bestPos[1] +", bestAv: "+bestPos[3]);
 
             // make hierarchy of best moves at position bestPos[0], bestPos[1]
 
+        startTime = System.nanoTime();
+
             ArrayList<SaboteurMove> bestMoves = MyTools.getBestMoveHierarchy(bestPos[0], bestPos[1], board, legalMoves, bestPos[3]);
 
-            System.out.println("BestMoves Size: " + bestMoves.size());
+            //System.out.println("BestMoves Size: " + bestMoves.size());
+        endTime = System.nanoTime();
+        elapsed = (endTime-startTime)/1000;
+
+        System.out.println("SYSTEM HIERARCHY ELAPSED: " + elapsed);
 
 
-            if (bestMoves.size() > 0) return bestMoves.get(0);
+        if (bestMoves.size() > 0) return bestMoves.get(0);
 
             // if close to end, play malus or destroy
             if (bestPos[3] <= 2){
@@ -120,11 +142,11 @@ public class StudentPlayer extends SaboteurPlayer {
                     last_idx[1] = (int) bestPos[1];
                 }
 
-                SaboteurMove play_destroy = new SaboteurMove(new SaboteurDestroy(), last_idx[0], last_idx[1], boardState.getTurnPlayer());
+                //SaboteurMove play_destroy = new SaboteurMove(new SaboteurDestroy(), last_idx[0], last_idx[1], boardState.getTurnPlayer());
 
-                if (boardState.isLegal(play_destroy)){
-                    return play_destroy;
-                }
+//                if (boardState.isLegal(play_destroy)){
+//                    return play_destroy;
+//                }
             }
 
 

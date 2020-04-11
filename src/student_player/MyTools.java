@@ -164,9 +164,9 @@ public class MyTools {
         //calc dist from lowest 1 from each column
 
 
-        int bestRow = 100;
-        int bestCol = 100;
-        double bestAv = 400;
+        int bestRow = 5;
+        int bestCol = 6;
+        double bestAv = (7+9+9)/3;
         int direction = 5;
 
         int[] goalRow = {3,5,7};
@@ -204,12 +204,20 @@ public class MyTools {
                     //System.out.println(card);
 
                     //CHECK IF PATH EXISTS TO CARD, IF NOT CANNOT BE BEST POSITION
-                    if (checkPath){
-                        if (!checkPathExists(board, i, j)){
-                            System.out.println("NO PATH TO: " + i + ", " + j);
-                            continue;
-                        }
-                    }
+
+//                    long startTime = System.nanoTime();
+//                    System.out.println("Started checking path existence");
+//                    if (checkPath){
+//                        if (!checkPathExists(board, i, j)){
+//                            System.out.println("NO PATH TO: " + i + ", " + j);
+//                            continue;
+//                        }
+//                    }
+//                    long endTime = System.nanoTime();
+//
+//                    long elapsed = (endTime-startTime)/1000;
+//
+//                    System.out.println("PATH EXISTENCE ELAPSED:" + elapsed);
 
 
                     //System.out.println("PATH EXISTS TO: " + i + ", " + j);
@@ -220,7 +228,7 @@ public class MyTools {
 
                     for (int check: revealedPositions){
 
-                        System.out.println("Revealed Postions size: " + revealedPositions.size());
+                        //System.out.println("Revealed Postions size: " + revealedPositions.size());
 
                         if (LeftCards.contains(card) && j!=0){
                             if (sums[0] > 100){
@@ -395,7 +403,7 @@ public class MyTools {
 
                 double[] bestPos = calcBestPos(board, false);
 
-                if (bestPos[3] < bestAv){
+                if (bestPos[3] <= bestAv){
                     bestMoves.add(m);
                 }
 
