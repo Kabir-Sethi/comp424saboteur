@@ -199,7 +199,7 @@ public class MyTools {
                     System.out.println("Started checking path existence");
                     if (checkPath){
                         if (!checkPathExists(board, i, j)){
-                            System.out.println("NO PATH TO: " + i + ", " + j);
+                            //System.out.println("NO PATH TO: " + i + ", " + j);
                             continue;
                         }
                     }
@@ -209,20 +209,20 @@ public class MyTools {
 
                     System.out.println("PATH EXISTENCE ELAPSED:" + elapsed);
 
-                    if (!revealedPositions.contains(0)){
-                        if (j== goalRow[0] && i==goalCol[0]){
-                            continue;
-                        }
-                    }
-
-
-
-                    if (j== goalRow[1] && i==goalCol[1] && !revealedPositions.contains(1)){
-                        continue;
-                    }
-                    if (j== goalRow[2] && i==goalCol[2] && !revealedPositions.contains(2)){
-                        continue;
-                    }
+//                    if (!revealedPositions.contains(0)){
+//                        if (j== goalRow[0] && i==goalCol[0]){
+//                            continue;
+//                        }
+//                    }
+//
+//
+//
+//                    if (j== goalRow[1] && i==goalCol[1] && !revealedPositions.contains(1)){
+//                        continue;
+//                    }
+//                    if (j== goalRow[2] && i==goalCol[2] && !revealedPositions.contains(2)){
+//                        continue;
+//                    }
 
                     //System.out.println("PATH EXISTS TO: " + i + ", " + j);
 
@@ -407,7 +407,7 @@ public class MyTools {
 
                 double[] bestPos = calcBestPos(board, false);
 
-                if (bestPos[3] < bestAv){
+                if (bestPos[3] <= bestAv){
                     bestMoves.add(m);
                 }
 

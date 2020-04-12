@@ -142,11 +142,11 @@ public class StudentPlayer extends SaboteurPlayer {
                     last_idx[1] = (int) bestPos[1];
                 }
 
-//                SaboteurMove play_destroy = new SaboteurMove(new SaboteurDestroy(), last_idx[0], last_idx[1], boardState.getTurnPlayer());
-//
-//                if (boardState.isLegal(play_destroy)){
-//                    return play_destroy;
-//                }
+                SaboteurMove play_destroy = new SaboteurMove(new SaboteurDestroy(), last_idx[0], last_idx[1], boardState.getTurnPlayer());
+
+                if (boardState.isLegal(play_destroy)){
+                    return play_destroy;
+                }
             }
 
 
