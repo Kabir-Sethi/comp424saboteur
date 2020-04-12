@@ -46,7 +46,7 @@ public class StudentPlayer extends SaboteurPlayer {
 
         ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
 
-        long startTime = System.nanoTime();
+        //long startTime = System.nanoTime();
 
         ArrayList<Integer> revealed = MyTools.checkRevealed(board);
 
@@ -73,15 +73,15 @@ public class StudentPlayer extends SaboteurPlayer {
                 return move;
             }
         }
+//
+//        long endTime = System.nanoTime();
+//
+//        long elapsed = (endTime-startTime)/1000;
+//
+//        System.out.println("REVEALED ELAPSED: " + elapsed);
 
-        long endTime = System.nanoTime();
 
-        long elapsed = (endTime-startTime)/1000;
-
-        System.out.println("REVEALED ELAPSED: " + elapsed);
-
-
-        startTime = System.nanoTime();
+        //startTime = System.nanoTime();
 
         System.out.println("BestPos Started");
             // @returns:
@@ -95,30 +95,50 @@ public class StudentPlayer extends SaboteurPlayer {
             //      average distance from goal for current bestPos
             double[] bestPos = MyTools.calcBestPos(board, true);
 
-        endTime = System.nanoTime();
-        elapsed = (endTime-startTime)/1000;
-
-        System.out.println("BESTPOS ELAPSED: " + elapsed);
+//        endTime = System.nanoTime();
+//        elapsed = (endTime-startTime)/1000;
+//
+//        System.out.println("BESTPOS ELAPSED: " + elapsed);
 
         System.out.println("i: " + bestPos[0] + ", j: "+bestPos[1] +", bestAv: "+bestPos[3]);
 
             // make hierarchy of best moves at position bestPos[0], bestPos[1]
 
-        startTime = System.nanoTime();
+        //startTime = System.nanoTime();
 
             ArrayList<SaboteurMove> bestMoves = MyTools.getBestMoveHierarchy(bestPos[0], bestPos[1], board, legalMoves, bestPos[3]);
 
             System.out.println("BestMoves Size: " + bestMoves.size());
-        endTime = System.nanoTime();
-        elapsed = (endTime-startTime)/1000;
+        //endTime = System.nanoTime();
+        //elapsed = (endTime-startTime)/1000;
 
-        System.out.println("SYSTEM HIERARCHY ELAPSED: " + elapsed);
+        //System.out.println("SYSTEM HIERARCHY ELAPSED: " + elapsed);
 
 
-        if (bestMoves.size() > 0) return bestMoves.get(0);
 
-            // if close to end, play malus or destroy
-            if (bestPos[3] <= 2){
+
+
+
+        if (bestMoves.size() > 0) {
+
+            SaboteurTile[][] newBoard = board;
+
+            String card = bestMoves.get(0).getCardPlayed().getName();
+
+            String[] card_split = card.split(":");
+
+            String card_idx = "";
+
+            if (card_split.length  == 1){
+                card_idx = card_split[0];
+            } else {
+                card_idx = card_split[1];
+            }
+
+            newBoard[(int)bestPos[0]][(int)bestPos[1]] =new SaboteurTile(card_idx);
+
+            if (MyTools.calcBestPos(newBoard, false)[3] < 2){
+
                 // play malus
                 for (SaboteurMove m: legalMoves){
                     if (m.getCardPlayed().getName().equals("Malus")){
@@ -147,7 +167,34 @@ public class StudentPlayer extends SaboteurPlayer {
                 if (boardState.isLegal(play_destroy)){
                     return play_destroy;
                 }
+                //if can't destroy last card, play any non block at current position:
+                for (SaboteurMove m: legalMoves){
+                    card = m.getCardPlayed().getName();
+
+                    card_split = card.split(":");
+
+                    if (card_split.length  == 1){
+                        card_idx = card_split[0];
+                    } else {
+                        card_idx = card_split[1];
+                    }
+
+                    if (!BlockCards.contains(card_idx) && m.getPosPlayed()[0] == bestPos[0] && m.getPosPlayed()[1] == bestPos[1]){
+                        return m;
+                    }
+                }
+
+                // if can't play any other card, play block card:
+                for (SaboteurMove m: legalMoves){
+                    if (m.getPosPlayed()[0] == bestPos[0] && m.getPosPlayed()[1] == bestPos[1]){
+                        return m;
+                    }
+                }
+
+            } else {
+                return bestMoves.get(0);
             }
+        }
 
 
 
@@ -172,10 +219,53 @@ public class StudentPlayer extends SaboteurPlayer {
                 }
             }
 
+
+
+
             // drop destroy cards!
             // or drop block card
         if (boardState.getPlayerCardsForDisplay(boardState.getTurnPlayer()).size() > 1){
+            // TODO: IMPLEMENT DROP HIERARCHY
+
+            ArrayList<Integer> destroy = new ArrayList<>();
+            ArrayList<Integer> bonus = new ArrayList<>();
+            ArrayList<Integer> block = new ArrayList<>();
+            ArrayList<Integer> malus = new ArrayList<>();
+            ArrayList<Integer> firstdrop = new ArrayList<>();
+            ArrayList<Integer> seconddrop = new ArrayList<>();
+            ArrayList<Integer> thirddrop = new ArrayList<>();
+            ArrayList<Integer> lastdrop = new ArrayList<>();
+
+
+            for (int k = 0; k<boardState.getPlayerCardsForDisplay(boardState.getTurnPlayer()).size(); k++){
+                String card = boardState.getPlayerCardsForDisplay(boardState.getTurnPlayer()).get(k).getName();
+                String[] card_split = card.split(":");
+                String name = "";
+                if (card_split.length  == 1) name = card_split[0];
+                else name = card_split[1];
+
+                if (name == "Destroy") destroy.add(k);
+
+                if (name == "Bonus") bonus.add(k);
+                if (BlockCards.contains(name)) block.add(k);
+                if (name == "malus") malus.add(k);
+                if (name.contains("0") || name.contains("10")) firstdrop.add(k);
+                if (name.contains("5") || name.contains("7")) seconddrop.add(k);
+                if (name.contains("6") || name.contains("9")) thirddrop.add(k);
+                if (name.contains("8")) lastdrop.add(k);
+
+            }
+
+            if (block.size() > 0 ) return new SaboteurMove(new SaboteurDrop(), block.get(0),0, boardState.getTurnPlayer());
+            else if (destroy.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), destroy.get(0),0, boardState.getTurnPlayer());
+            else if (bonus.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), bonus.get(0),0, boardState.getTurnPlayer());
+            else if (malus.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), malus.get(0),0, boardState.getTurnPlayer());
+            else if (firstdrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), firstdrop.get(0),0, boardState.getTurnPlayer());
+            else if (seconddrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), seconddrop.get(0),0, boardState.getTurnPlayer());
+            else if (thirddrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), thirddrop.get(0),0, boardState.getTurnPlayer());
+            else if (lastdrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), lastdrop.get(0),0, boardState.getTurnPlayer());
             return new SaboteurMove(new SaboteurDrop(), 1,0, boardState.getTurnPlayer());
+
         } else {
             return myMove;
         }

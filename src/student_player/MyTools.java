@@ -195,19 +195,19 @@ public class MyTools {
 
                     //CHECK IF PATH EXISTS TO CARD, IF NOT CANNOT BE BEST POSITION
 
-                    long startTime = System.nanoTime();
-                    System.out.println("Started checking path existence");
+                    //long startTime = System.nanoTime();
+                    //System.out.println("Started checking path existence");
                     if (checkPath){
                         if (!checkPathExists(board, i, j)){
                             //System.out.println("NO PATH TO: " + i + ", " + j);
                             continue;
                         }
                     }
-                    long endTime = System.nanoTime();
+                    //long endTime = System.nanoTime();
 
-                    long elapsed = (endTime-startTime)/1000;
+                    //long elapsed = (endTime-startTime)/1000;
 
-                    System.out.println("PATH EXISTENCE ELAPSED:" + elapsed);
+                    //System.out.println("PATH EXISTENCE ELAPSED:" + elapsed);
 
 //                    if (!revealedPositions.contains(0)){
 //                        if (j== goalRow[0] && i==goalCol[0]){
