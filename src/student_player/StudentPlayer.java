@@ -142,8 +142,8 @@ public class StudentPlayer extends SaboteurPlayer {
                     last_idx[1] = (int) bestPos[1];
                 }
 
-                //SaboteurMove play_destroy = new SaboteurMove(new SaboteurDestroy(), last_idx[0], last_idx[1], boardState.getTurnPlayer());
-
+//                SaboteurMove play_destroy = new SaboteurMove(new SaboteurDestroy(), last_idx[0], last_idx[1], boardState.getTurnPlayer());
+//
 //                if (boardState.isLegal(play_destroy)){
 //                    return play_destroy;
 //                }
@@ -174,6 +174,12 @@ public class StudentPlayer extends SaboteurPlayer {
 
             // drop destroy cards!
             // or drop block card
-        return new SaboteurMove(new SaboteurDrop(), 2,0, boardState.getTurnPlayer());
+        if (boardState.getPlayerCardsForDisplay(boardState.getTurnPlayer()).size() > 1){
+            return new SaboteurMove(new SaboteurDrop(), 1,0, boardState.getTurnPlayer());
+        } else {
+            return myMove;
+        }
+
+
     }
 }

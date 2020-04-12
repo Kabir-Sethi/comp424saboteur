@@ -403,7 +403,7 @@ public class MyTools {
 
                 double[] bestPos = calcBestPos(board, false);
 
-                if (bestPos[3] <= bestAv){
+                if (bestPos[3] < bestAv){
                     bestMoves.add(m);
                 }
 
