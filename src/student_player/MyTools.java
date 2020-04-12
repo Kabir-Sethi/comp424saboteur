@@ -93,9 +93,9 @@ public class MyTools {
         queue.add(p);
 
         while (queue.size() > 0){
-
+            //System.out.println(queue.size());
             Integer[] s = queue.poll();
-
+            visited[s[0]][s[1]] = true;
             if (s[0] == 5 && s[1] == 5){
                 return true;
             }
@@ -185,17 +185,7 @@ public class MyTools {
 
                     String card = board[i][j].getIdx();
 
-                    if (j== goalRow[0] && i==goalCol[0]){
-                        continue;
-                    }
-                    if (j== goalRow[1] && i==goalCol[1]){
-                        continue;
-                    }
-                    if (j== goalRow[2] && i==goalCol[2]){
-                        continue;
-                    }
-
-
+                    //MUST CHECK IF PATH EXISTS TO THE GOAL CARD FIRST, OTHERWISE DOES NOT WORK!
 
                     if (BlockCards.contains(card)){
                         continue;
@@ -205,20 +195,34 @@ public class MyTools {
 
                     //CHECK IF PATH EXISTS TO CARD, IF NOT CANNOT BE BEST POSITION
 
-//                    long startTime = System.nanoTime();
-//                    System.out.println("Started checking path existence");
-//                    if (checkPath){
-//                        if (!checkPathExists(board, i, j)){
-//                            System.out.println("NO PATH TO: " + i + ", " + j);
-//                            continue;
-//                        }
-//                    }
-//                    long endTime = System.nanoTime();
-//
-//                    long elapsed = (endTime-startTime)/1000;
-//
-//                    System.out.println("PATH EXISTENCE ELAPSED:" + elapsed);
+                    long startTime = System.nanoTime();
+                    System.out.println("Started checking path existence");
+                    if (checkPath){
+                        if (!checkPathExists(board, i, j)){
+                            System.out.println("NO PATH TO: " + i + ", " + j);
+                            continue;
+                        }
+                    }
+                    long endTime = System.nanoTime();
 
+                    long elapsed = (endTime-startTime)/1000;
+
+                    System.out.println("PATH EXISTENCE ELAPSED:" + elapsed);
+
+                    if (!revealedPositions.contains(0)){
+                        if (j== goalRow[0] && i==goalCol[0]){
+                            continue;
+                        }
+                    }
+
+
+
+                    if (j== goalRow[1] && i==goalCol[1] && !revealedPositions.contains(1)){
+                        continue;
+                    }
+                    if (j== goalRow[2] && i==goalCol[2] && !revealedPositions.contains(2)){
+                        continue;
+                    }
 
                     //System.out.println("PATH EXISTS TO: " + i + ", " + j);
 

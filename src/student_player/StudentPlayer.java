@@ -100,7 +100,7 @@ public class StudentPlayer extends SaboteurPlayer {
 
         System.out.println("BESTPOS ELAPSED: " + elapsed);
 
-            //System.out.println("i: " + bestPos[0] + ", j: "+bestPos[1] +", bestAv: "+bestPos[3]);
+        System.out.println("i: " + bestPos[0] + ", j: "+bestPos[1] +", bestAv: "+bestPos[3]);
 
             // make hierarchy of best moves at position bestPos[0], bestPos[1]
 
@@ -108,7 +108,7 @@ public class StudentPlayer extends SaboteurPlayer {
 
             ArrayList<SaboteurMove> bestMoves = MyTools.getBestMoveHierarchy(bestPos[0], bestPos[1], board, legalMoves, bestPos[3]);
 
-            //System.out.println("BestMoves Size: " + bestMoves.size());
+            System.out.println("BestMoves Size: " + bestMoves.size());
         endTime = System.nanoTime();
         elapsed = (endTime-startTime)/1000;
 
