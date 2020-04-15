@@ -1,20 +1,39 @@
 package student_player;
 
-
+import Saboteur.SaboteurBoard;
 import Saboteur.SaboteurMove;
-import Saboteur.cardClasses.*;
+import Saboteur.cardClasses.SaboteurCard;
+import Saboteur.cardClasses.SaboteurDestroy;
+import Saboteur.cardClasses.SaboteurDrop;
+import Saboteur.cardClasses.SaboteurTile;
 import boardgame.Move;
 
 import Saboteur.SaboteurPlayer;
 import Saboteur.SaboteurBoardState;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
 /** A player file submitted by a student. */
 public class StudentPlayer extends SaboteurPlayer {
 
+
+    private static ArrayList<String> BlockCards = new ArrayList<String>(
+            Arrays.asList("entrance", "1", "2", "2_flip", "3", "3_flip", "4", "4_flip", "11", "11_flip", "12", "12_flip", "13", "14", "14_flip", "15")
+    );
+    private static ArrayList<String> LeftCards = new ArrayList<String>(
+            Arrays.asList("entrance","5_flip", "6", "7_flip", "9", "9_flip", "10", "8")
+    );
+    private static ArrayList<String> RightCards = new ArrayList<String>(
+            Arrays.asList("entrance","5", "6_flip", "7", "8", "9", "9_flip", "10")
+    );
+    private static ArrayList<String> TopCards = new ArrayList<String>(
+            Arrays.asList("entrance","0", "5_flip", "6", "6_flip", "7", "8", "9_flip")
+    );
+    private static ArrayList<String> BottomCards = new ArrayList<String>(
+            Arrays.asList("entrance","0", "5", "6", "6_flip", "7_flip", "8", "9")
+    );
     /**
      * You must modify this constructor to return your student number. This is
      * important, because this is what the code that runs the competition uses to
@@ -23,12 +42,6 @@ public class StudentPlayer extends SaboteurPlayer {
     public StudentPlayer() {
         super("260738242");
     }
-
-    private static ArrayList<String> BlockCards = new ArrayList<String>(Arrays.asList("entrance", "1", "2", "2_flip", "3", "3_flip", "4", "4_flip", "11", "11_flip", "12", "12_flip", "13", "14", "14_flip", "15"));
-    private static ArrayList<String> LeftCards = new ArrayList<String>(Arrays.asList("entrance", "5_flip", "6", "7_flip", "9", "9_flip", "10", "8"));
-    private static ArrayList<String> RightCards = new ArrayList<String>(Arrays.asList("entrance", "5", "6_flip", "7", "8", "9", "9_flip", "10"));
-    private static ArrayList<String> TopCards = new ArrayList<String>(Arrays.asList("entrance", "0", "5_flip", "6", "6_flip", "7", "8", "9_flip"));
-    private static ArrayList<String> BottomCards = new ArrayList<String>(Arrays.asList("entrance", "0", "5", "6", "6_flip", "7_flip", "8", "9"));
 
     /**
      * This is the primary method that you need to implement. The ``boardState``
@@ -40,236 +53,226 @@ public class StudentPlayer extends SaboteurPlayer {
         // For example, maybe you'll need to load some pre-processed best opening
         // strategies...
 
+
+        // GET RID OF MALUS
+        if (ridMalus(boardState) != null){
+            return ridMalus(boardState);
+        }
+
+        // PLAY MAP CARD IF GOAL IS NOT OBVIOUS
+        if (playMap(boardState) != null){
+            return playMap(boardState);
+        }
+
+        // REMOVE DEAD END CARDS IF DESTROY AVAILABLE
+        // BY COMPARING THE BEST POSITION IF NOT CONSIDERING BLOCK CARDS AND CONSIDERING BLOCK CARDS
+        // 1. Not Considering Block Cards
+        ArrayList<Double> bestPosNoBlock = MyTools.getBestPosition(boardState.getHiddenBoard(), true, true, true);
+        // 2. Considering Block Cards
+        ArrayList<Double> bestPosWithBlock = MyTools.getBestPosition(boardState.getHiddenBoard(), false, true, false);
+
+        // IF NOT SAME POSITION ANY MORE, THEN DESTROY DEAD END BLOCK CARD
+        if (!bestPosNoBlock.get(0).equals(bestPosWithBlock.get(0)) || !bestPosNoBlock.get(1).equals(bestPosWithBlock.get(1)) ){
+
+            //TODO: MAKE SURE THAT DROPPING DOES NOT ALLOW OTHER TO WIN
+            if (!bestPosWithBlock.get(2).equals(0) && removeDeadEnd(boardState, bestPosWithBlock.get(0).intValue(), bestPosWithBlock.get(1).intValue()) != null)
+                return removeDeadEnd(boardState, bestPosWithBlock.get(0).intValue(), bestPosWithBlock.get(1).intValue());
+        }
+
+        //TODO; GET AND SORT BEST MOVES
+
+        SaboteurMove bestMove = getBestMove(boardState, bestPosNoBlock);
+        if (bestMove != null)
+            return bestMove;
+
+
+        //DONE: PUT CASE FOR CLOSE TO END
+
+        //TODO: PUT CASE FOR DROPPING CARDS/MOVE
+        if (boardState.getCurrentPlayerCards().size()>0)
+            return playDrop(boardState);
+
+
+        // Is random the best you can do?
         Move myMove = boardState.getRandomMove();
 
-        SaboteurTile[][] board = boardState.getHiddenBoard();
+        // Return your move to be processed by the server.
+        return myMove;
+    }
 
-        ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
 
-        //long startTime = System.nanoTime();
 
-        ArrayList<Integer> revealed = MyTools.checkRevealed(board);
 
-        if (revealed.size() > 1) {
-            // PLAY MAP CARD AND OTHERWISE DONT
-            Random r = new Random();
-                int index = r.nextInt(revealed.size());
-                if (revealed.get(index) == 0){
-                    SaboteurMove m = new SaboteurMove(new SaboteurMap(), 12, 3, boardState.getTurnPlayer());
-                    if(boardState.isLegal(m)) return m;
-                } else if (revealed.get(index) == 1){
-                    SaboteurMove m = new SaboteurMove(new SaboteurMap(), 12, 5, boardState.getTurnPlayer());
-                    if(boardState.isLegal(m)) return m;
-                } else {
-                    SaboteurMove m = new SaboteurMove(new SaboteurMap(), 12, 7, boardState.getTurnPlayer());
-                    if(boardState.isLegal(m)) return m;
-                }
-        }
-
+    private SaboteurMove ridMalus(SaboteurBoardState boardState){
         if (boardState.getNbMalus(boardState.getTurnPlayer()) > 0){
-            SaboteurMove move = new SaboteurMove(new SaboteurBonus(), 0, 0, boardState.getTurnPlayer());
-
-            if (boardState.isLegal(move)){
-                return move;
-            }
-        }
-//
-//        long endTime = System.nanoTime();
-//
-//        long elapsed = (endTime-startTime)/1000;
-//
-//        System.out.println("REVEALED ELAPSED: " + elapsed);
-
-
-        //startTime = System.nanoTime();
-
-        System.out.println("BestPos Started");
-            // @returns:
-            //      best place to play i
-            //      best place to play j
-            //      direction of best spot to play and current card:
-            //                0 -> current card is right of best pos
-            //                1 -> current card is left of best pos
-            //                2 -> current card is bottom of bestpos
-            //                3 -> current card is top of bestpos
-            //      average distance from goal for current bestPos
-            double[] bestPos = MyTools.calcBestPos(board, true);
-
-//        endTime = System.nanoTime();
-//        elapsed = (endTime-startTime)/1000;
-//
-//        System.out.println("BESTPOS ELAPSED: " + elapsed);
-
-        System.out.println("i: " + bestPos[0] + ", j: "+bestPos[1] +", bestAv: "+bestPos[3]);
-
-            // make hierarchy of best moves at position bestPos[0], bestPos[1]
-
-        //startTime = System.nanoTime();
-
-            ArrayList<SaboteurMove> bestMoves = MyTools.getBestMoveHierarchy(bestPos[0], bestPos[1], board, legalMoves, bestPos[3]);
-
-            System.out.println("BestMoves Size: " + bestMoves.size());
-        //endTime = System.nanoTime();
-        //elapsed = (endTime-startTime)/1000;
-
-        //System.out.println("SYSTEM HIERARCHY ELAPSED: " + elapsed);
-
-
-
-
-
-
-        if (bestMoves.size() > 0) {
-
-            SaboteurTile[][] newBoard = board;
-
-            String card = bestMoves.get(0).getCardPlayed().getName();
-
-            String[] card_split = card.split(":");
-
-            String card_idx = "";
-
-            if (card_split.length  == 1){
-                card_idx = card_split[0];
-            } else {
-                card_idx = card_split[1];
-            }
-
-            newBoard[(int)bestPos[0]][(int)bestPos[1]] =new SaboteurTile(card_idx);
-
-            if (MyTools.calcBestPos(newBoard, false)[3] < 2){
-
-                // play malus
-                for (SaboteurMove m: legalMoves){
-                    if (m.getCardPlayed().getName().equals("Malus")){
-                        return m;
-                    }
-                }
-
-                int[] last_idx = new int[2];
-                // if no malus, destroy last card:
-                if (bestPos[2] == 0){
-                    last_idx[0] = (int) bestPos[0];
-                    last_idx[1] = (int) bestPos[1]+1;
-                } else if (bestPos[2] == 1){
-                    last_idx[0] = (int) bestPos[0];
-                    last_idx[1] = (int) bestPos[1]-1;
-                } else if (bestPos[2] == 2){
-                    last_idx[0] = (int) bestPos[0]+1;
-                    last_idx[1] = (int) bestPos[1];
-                } else {
-                    last_idx[0] = (int) bestPos[0]-1;
-                    last_idx[1] = (int) bestPos[1];
-                }
-
-                SaboteurMove play_destroy = new SaboteurMove(new SaboteurDestroy(), last_idx[0], last_idx[1], boardState.getTurnPlayer());
-
-                if (boardState.isLegal(play_destroy)){
-                    return play_destroy;
-                }
-                //if can't destroy last card, play any non block at current position:
-                for (SaboteurMove m: legalMoves){
-                    card = m.getCardPlayed().getName();
-
-                    card_split = card.split(":");
-
-                    if (card_split.length  == 1){
-                        card_idx = card_split[0];
-                    } else {
-                        card_idx = card_split[1];
-                    }
-
-                    if (!BlockCards.contains(card_idx) && m.getPosPlayed()[0] == bestPos[0] && m.getPosPlayed()[1] == bestPos[1]){
-                        return m;
-                    }
-                }
-
-                // if can't play any other card, play block card:
-                for (SaboteurMove m: legalMoves){
-                    if (m.getPosPlayed()[0] == bestPos[0] && m.getPosPlayed()[1] == bestPos[1]){
-                        return m;
-                    }
-                }
-
-            } else {
-                return bestMoves.get(0);
-            }
-        }
-
-
-
-            // if no best move: play random move not at best position
-            for (SaboteurMove m: legalMoves){
-
-                String card = m.getCardPlayed().getName();
-
-                String[] card_split = card.split(":");
-
-                String card_idx = "";
-
-                if (card_split.length  == 1){
-                    card_idx = card_split[0];
-                } else {
-                    card_idx = card_split[1];
-                }
-
-
-                if (m.getPosPlayed()[0] != bestPos[0] && m.getPosPlayed()[1] != bestPos[1] && BlockCards.contains(card_idx)){
+            for (SaboteurMove m: boardState.getAllLegalMoves()){
+                if (m.getCardPlayed().getName().contains("Bonus")){
                     return m;
                 }
             }
+        }
+        return null;
+    }
 
 
+    private SaboteurMove playMap(SaboteurBoardState boardState){
+        if (MyTools.checkRevealed(boardState.getHiddenBoard()).size() > 1){
+            for (SaboteurMove m: boardState.getAllLegalMoves()){
+                if (m.getCardPlayed().getName().contains("Map")){
+                    return m;
+                }
+            }
+        }
+        return null;
+    }
 
 
-            // drop destroy cards!
-            // or drop block card
-        if (boardState.getPlayerCardsForDisplay(boardState.getTurnPlayer()).size() > 1){
-            // TODO: IMPLEMENT DROP HIERARCHY
+    private SaboteurMove removeDeadEnd(SaboteurBoardState boardState, int i, int j){
+        ArrayList<SaboteurCard> cards = boardState.getCurrentPlayerCards();
 
-            ArrayList<Integer> destroy = new ArrayList<>();
-            ArrayList<Integer> bonus = new ArrayList<>();
-            ArrayList<Integer> block = new ArrayList<>();
-            ArrayList<Integer> malus = new ArrayList<>();
-            ArrayList<Integer> firstdrop = new ArrayList<>();
-            ArrayList<Integer> seconddrop = new ArrayList<>();
-            ArrayList<Integer> thirddrop = new ArrayList<>();
-            ArrayList<Integer> lastdrop = new ArrayList<>();
+        for (SaboteurCard c: cards){
+            if (c.getName().contains("Destroy")){
+                SaboteurMove m = new SaboteurMove(new SaboteurDestroy(), i, j, boardState.getTurnPlayer());
+
+                if (boardState.isLegal(m))
+                    return m;
+            }
+        }
+
+        return null;
+    }
+
+    private SaboteurMove getBestMove(SaboteurBoardState boardState, ArrayList<Double> currentBestPos){
 
 
-            for (int k = 0; k<boardState.getPlayerCardsForDisplay(boardState.getTurnPlayer()).size(); k++){
-                String card = boardState.getPlayerCardsForDisplay(boardState.getTurnPlayer()).get(k).getName();
-                String[] card_split = card.split(":");
-                String name = "";
-                if (card_split.length  == 1) name = card_split[0];
-                else name = card_split[1];
+        ArrayList<SaboteurMove> bestMoves = new ArrayList<>();
 
-                if (name == "Destroy") destroy.add(k);
+        if (currentBestPos.get(2)>1 && currentBestPos.get(2)<3){
+            return playDrop(boardState);
+        }
 
-                if (name == "Bonus") bonus.add(k);
-                if (BlockCards.contains(name)) block.add(k);
-                if (name == "malus") malus.add(k);
-                if (name.contains("0") || name.contains("10")) firstdrop.add(k);
-                if (name.contains("5") || name.contains("7")) seconddrop.add(k);
-                if (name.contains("6") || name.contains("9")) thirddrop.add(k);
-                if (name.contains("8")) lastdrop.add(k);
+        int i_play = currentBestPos.get(0).intValue();
+        int j_play = currentBestPos.get(1).intValue();
+
+        // MOVE TO THE CORRECT POSITION CARD IS PLAYED:
+        // LEFT
+        if (currentBestPos.get(3).intValue()==0)
+            j_play--;
+
+        // RIGHT:
+        if (currentBestPos.get(3).intValue()==1)
+            j_play++;
+
+        // TOP:
+        if (currentBestPos.get(3).intValue()==2)
+            i_play--;
+
+        // BOTTOM:
+        if (currentBestPos.get(3).intValue()==3)
+            i_play++;
+
+
+        for (SaboteurMove m: boardState.getAllLegalMoves()){
+            if (currentBestPos.get(0).equals(i_play) && currentBestPos.get(1).equals(j_play)){
+
+                String card = m.getCardPlayed().getName();
+
+                String[] split = card.split(":");
+
+                if (split.length >1 ){
+                    card = split[1];
+                } else {
+                    card = split[0];
+                }
+
+                if (BlockCards.contains(card))
+                    continue;
+
+                SaboteurTile[][] newBoard = boardState.getHiddenBoard();
+
+                newBoard[i_play][j_play] = new SaboteurTile(card);
+
+                ArrayList<Double> newPos = MyTools.getBestPosition(newBoard, true, false, true);
+
+                if (newPos.get(2) < currentBestPos.get(2)){
+                    bestMoves.add(m);
+                }
 
             }
-
-            if (block.size() > 0 ) return new SaboteurMove(new SaboteurDrop(), block.get(0),0, boardState.getTurnPlayer());
-            else if (destroy.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), destroy.get(0),0, boardState.getTurnPlayer());
-            else if (bonus.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), bonus.get(0),0, boardState.getTurnPlayer());
-            else if (malus.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), malus.get(0),0, boardState.getTurnPlayer());
-            else if (firstdrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), firstdrop.get(0),0, boardState.getTurnPlayer());
-            else if (seconddrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), seconddrop.get(0),0, boardState.getTurnPlayer());
-            else if (thirddrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), thirddrop.get(0),0, boardState.getTurnPlayer());
-            else if (lastdrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), lastdrop.get(0),0, boardState.getTurnPlayer());
-            return new SaboteurMove(new SaboteurDrop(), 1,0, boardState.getTurnPlayer());
-
-        } else {
-            return myMove;
         }
 
 
+        if (bestMoves.size() == 0 && currentBestPos.get(2) <= 2)
+            return playMalusorDestroy(boardState, currentBestPos);
+        else
+            return bestMoves.get(0);
+
+
     }
+
+    private SaboteurMove playDrop(SaboteurBoardState boardState){
+        //TODO: IMPLEMENT DROP HIERARCHY
+
+        ArrayList<Integer> destroy = new ArrayList<>();
+        ArrayList<Integer> bonus = new ArrayList<>();
+        ArrayList<Integer> block = new ArrayList<>();
+        ArrayList<Integer> malus = new ArrayList<>();
+        ArrayList<Integer> firstdrop = new ArrayList<>();
+        ArrayList<Integer> seconddrop = new ArrayList<>();
+        ArrayList<Integer> thirddrop = new ArrayList<>();
+        ArrayList<Integer> lastdrop = new ArrayList<>();
+
+
+        for (int k = 0; k<boardState.getPlayerCardsForDisplay(boardState.getTurnPlayer()).size(); k++){
+            String card = boardState.getPlayerCardsForDisplay(boardState.getTurnPlayer()).get(k).getName();
+            String[] card_split = card.split(":");
+            String name = "";
+            if (card_split.length  == 1) name = card_split[0];
+            else name = card_split[1];
+
+            if (name == "Destroy") destroy.add(k);
+
+            if (name == "Bonus") bonus.add(k);
+            if (BlockCards.contains(name)) block.add(k);
+            if (name == "malus") malus.add(k);
+            if (name.contains("0") || name.contains("10")) firstdrop.add(k);
+            if (name.contains("5") || name.contains("7")) seconddrop.add(k);
+            if (name.contains("6") || name.contains("9")) thirddrop.add(k);
+            if (name.contains("8")) lastdrop.add(k);
+
+        }
+
+        if (block.size() > 0 ) return new SaboteurMove(new SaboteurDrop(), block.get(0),0, boardState.getTurnPlayer());
+            //else if (destroy.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), destroy.get(0),0, boardState.getTurnPlayer());
+        else if (bonus.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), bonus.get(0),0, boardState.getTurnPlayer());
+            //else if (malus.size() > 1 ) return new SaboteurMove(new SaboteurMalus(), 0,0, boardState.getTurnPlayer());
+        else if (firstdrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), firstdrop.get(0),0, boardState.getTurnPlayer());
+        else if (seconddrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), seconddrop.get(0),0, boardState.getTurnPlayer());
+        else if (thirddrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), thirddrop.get(0),0, boardState.getTurnPlayer());
+        else if (lastdrop.size() > 1 ) return new SaboteurMove(new SaboteurDrop(), lastdrop.get(0),0, boardState.getTurnPlayer());
+        return new SaboteurMove(new SaboteurDrop(), 0,0, boardState.getTurnPlayer());
+
+    }
+
+    private SaboteurMove playMalusorDestroy(SaboteurBoardState boardState, ArrayList<Double> currentBestPos){
+        //TODO: IMPLEMENT PLAY MALUS OR DESTROY
+
+        ArrayList<SaboteurMove> legalMoves = boardState.getAllLegalMoves();
+
+        // play malus
+        for (SaboteurMove m: legalMoves){
+            if (m.getCardPlayed().getName().equals("Malus")){
+                return m;
+            }
+        }
+
+        //Play Destroy
+        SaboteurMove play_destroy = new SaboteurMove(new SaboteurDestroy(), currentBestPos.get(0).intValue(), currentBestPos.get(1).intValue(), boardState.getTurnPlayer());
+        if (boardState.isLegal(play_destroy)){
+            return play_destroy;
+        }
+
+        return null;
+    }
+
 }
